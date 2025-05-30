@@ -10,6 +10,8 @@ import CoreBluetooth
 
 final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     @Published var log: String = "🔌 初期化待ち"
+    @Published var health: Int = 100 // ← 体力追加
+
 
     private var centralManager: CBCentralManager!
     private var targetPeripheral: CBPeripheral?
@@ -77,9 +79,16 @@ final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralMan
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if let data = characteristic.value,
-           let message = String(data: data, encoding: .utf8) {
-            log.append("\n📥 通知受信: \(message)")
+        if let data = characteristic.value {
+            let byteString = data.map { String(format: "%02hhx", $0) }.joined(separator: " ")
+            log.append("\n📥 通知受信（RAW）: \(byteString)")
+
+            if let message = String(data: data, encoding: .utf8) {
+                log.append("\n📥 通知受信（文字列）: \(message)")
+            } else {
+                log.append("\n⚠️ UTF-8デコード失敗")
+            }
         }
     }
+
 }

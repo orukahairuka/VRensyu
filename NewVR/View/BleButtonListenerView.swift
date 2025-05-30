@@ -15,10 +15,15 @@ struct BleButtonListenerView: View {
     @StateObject private var viewModel = BleButtonListenerViewModel()
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("📲 ESP32ボタン受信アプリ")
                 .font(.title)
-                .padding(.bottom, 10)
+
+            VStack(alignment: .leading) {
+                Text("❤️ 体力: \(viewModel.health)")
+                ProgressView(value: Float(viewModel.health), total: 100)
+                    .progressViewStyle(LinearProgressViewStyle())
+            }
 
             ScrollView {
                 Text(viewModel.log)
