@@ -8,7 +8,8 @@
 import FirebaseFirestore
 import CoreLocation
 
-struct LocationData {
+struct LocationData: Identifiable {
+    let id: String  // userId
     let latitude: Double
     let longitude: Double
     let timestamp: Date
@@ -25,20 +26,26 @@ final class LocationRepository {
         ])
     }
 
-    func observeAllLocations(completion: @escaping ([String: LocationData]) -> Void) {
+    func observeLocations(completion: @escaping ([LocationData]) -> Void) {
         db.collection("locations").addSnapshotListener { snapshot, error in
             guard let documents = snapshot?.documents else { return }
 
-            var results: [String: LocationData] = [:]
-            for doc in documents {
+            let results: [LocationData] = documents.compactMap { doc in
                 let data = doc.data()
-                if let lat = data["latitude"] as? Double,
-                   let lon = data["longitude"] as? Double,
-                   let ts = data["timestamp"] as? Timestamp {
-                    results[doc.documentID] = LocationData(latitude: lat, longitude: lon, timestamp: ts.dateValue())
-                }
+                guard let lat = data["latitude"] as? Double,
+                      let lon = data["longitude"] as? Double,
+                      let ts = data["timestamp"] as? Timestamp else { return nil }
+
+                return LocationData(
+                    id: doc.documentID,
+                    latitude: lat,
+                    longitude: lon,
+                    timestamp: ts.dateValue()
+                )
             }
+
             completion(results)
         }
     }
 }
+
