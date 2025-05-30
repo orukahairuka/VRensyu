@@ -85,10 +85,19 @@ final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralMan
 
             if let message = String(data: data, encoding: .utf8) {
                 log.append("\n📥 通知受信（文字列）: \(message)")
+
+                // 🔽 "button" を含むか確認して体力を減らす
+                if message.trimmingCharacters(in: .whitespacesAndNewlines).lowercased().contains("button") {
+                    if health > 0 {
+                        health = max(0, health - 10)
+                        log.append("\n💥 体力が減った！ 残り: \(health)")
+                    }
+                }
             } else {
                 log.append("\n⚠️ UTF-8デコード失敗")
             }
         }
     }
+
 
 }
