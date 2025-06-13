@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3B8000A62DE9AB0F003774EF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 3B8000A52DE9AB0F003774EF /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3B80006A2DE982EF003774EF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +33,22 @@
 		3B8000732DE982EF003774EF /* NewVRUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NewVRUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3B61DF932DFBFD880081509B /* Exceptions for "NewVR" folder in "NewVR" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 3B80005B2DE982ED003774EF /* NewVR */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3B80005E2DE982ED003774EF /* NewVR */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3B61DF932DFBFD880081509B /* Exceptions for "NewVR" folder in "NewVR" target */,
+			);
 			path = NewVR;
 			sourceTree = "<group>";
 		};
@@ -42,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B8000A62DE9AB0F003774EF /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				3B80005E2DE982ED003774EF /* NewVR */,
+				3B8000A42DE9AB0F003774EF /* Frameworks */,
 				3B80005D2DE982ED003774EF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,6 +97,13 @@
 				3B8000732DE982EF003774EF /* NewVRUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3B8000A42DE9AB0F003774EF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -100,6 +126,7 @@
 			);
 			name = NewVR;
 			packageProductDependencies = (
+				3B8000A52DE9AB0F003774EF /* FirebaseFirestore */,
 			);
 			productName = NewVR;
 			productReference = 3B80005C2DE982ED003774EF /* NewVR.app */;
@@ -177,6 +204,9 @@
 			);
 			mainGroup = 3B8000532DE982ED003774EF;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3B8000A32DE9AAEE003774EF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3B80005D2DE982ED003774EF /* Products */;
 			projectDirPath = "";
@@ -382,8 +412,10 @@
 				DEVELOPMENT_TEAM = 922N7TF68N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NewVR/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "bluetooth使います";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "位置情報を許可してください";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -412,8 +444,10 @@
 				DEVELOPMENT_TEAM = 922N7TF68N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NewVR/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "bluetooth使います";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "位置情報を許可してください";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -544,6 +578,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3B8000A32DE9AAEE003774EF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3B8000A52DE9AB0F003774EF /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B8000A32DE9AAEE003774EF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3B8000542DE982ED003774EF /* Project object */;
 }
