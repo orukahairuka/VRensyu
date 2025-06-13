@@ -2,15 +2,19 @@
 //  ContentView.swift
 //  NewVR
 //
-//  Created by 櫻井絵理香 on 2025/05/30.
+//  Created by 櫻井絵理香 on 2025/06/13.
 //
-
 import SwiftUI
-import CoreBluetooth
 
-struct BleButtonListenerView: View {
-    @StateObject private var viewModel = BleButtonListenerViewModel()
-    
+struct ContentView: View {
+    @StateObject private var mapViewModel = MapLocationViewModel()
+    @StateObject private var bleViewModel: BleButtonListenerViewModel
+
+    init() {
+        let mapVM = MapLocationViewModel()
+        _mapViewModel = StateObject(wrappedValue: mapVM)
+        _bleViewModel = StateObject(wrappedValue: BleButtonListenerViewModel(mapViewModel: mapVM))
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -18,19 +22,19 @@ struct BleButtonListenerView: View {
                 .font(.title)
 
             VStack(alignment: .leading, spacing: 10) {
-                Text("❤️ 体力: \(viewModel.health)") // ← 修正済み
-                ProgressView(value: Float(viewModel.health), total: 100)
+                Text("❤️ 体力: \(mapViewModel.health)")
+                ProgressView(value: Float(mapViewModel.health), total: 100)
                     .progressViewStyle(LinearProgressViewStyle())
 
-                if viewModel.health == 0 {
+                if mapViewModel.health == 0 {
                     Text("💀 ゲームオーバー")
                         .font(.title)
                         .foregroundColor(.red)
                         .bold()
 
                     Button(action: {
-                        viewModel.health = 100
-                        viewModel.log.append("\n🔁 体力を復活しました")
+                        mapViewModel.updateHealth(100)
+                        bleViewModel.log.append("\n🔁 体力を復活しました")
                     }) {
                         Text("🔁 もう一度")
                             .font(.headline)
@@ -43,9 +47,10 @@ struct BleButtonListenerView: View {
                 }
             }
 
+            UserMapView(viewModel: mapViewModel) // ✅ 追加：マップ表示
 
             ScrollView {
-                Text(viewModel.log)
+                Text(bleViewModel.log)
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color(UIColor.secondarySystemBackground))

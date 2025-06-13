@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3B8000A62DE9AB0F003774EF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 3B8000A52DE9AB0F003774EF /* FirebaseFirestore */; };
+		3B38C1362DFC098700C45B33 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3B38C1352DFC098700C45B33 /* FirebaseCore */; };
+		3B38C1382DFC099C00C45B33 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 3B38C1372DFC099C00C45B33 /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,22 +34,9 @@
 		3B8000732DE982EF003774EF /* NewVRUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NewVRUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		3B61DF932DFBFD880081509B /* Exceptions for "NewVR" folder in "NewVR" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 3B80005B2DE982ED003774EF /* NewVR */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3B80005E2DE982ED003774EF /* NewVR */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				3B61DF932DFBFD880081509B /* Exceptions for "NewVR" folder in "NewVR" target */,
-			);
 			path = NewVR;
 			sourceTree = "<group>";
 		};
@@ -59,7 +47,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B8000A62DE9AB0F003774EF /* FirebaseFirestore in Frameworks */,
+				3B38C1362DFC098700C45B33 /* FirebaseCore in Frameworks */,
+				3B38C1382DFC099C00C45B33 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,11 +69,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3B38C1342DFC098700C45B33 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3B8000532DE982ED003774EF = {
 			isa = PBXGroup;
 			children = (
 				3B80005E2DE982ED003774EF /* NewVR */,
-				3B8000A42DE9AB0F003774EF /* Frameworks */,
+				3B38C1342DFC098700C45B33 /* Frameworks */,
 				3B80005D2DE982ED003774EF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -97,13 +93,6 @@
 				3B8000732DE982EF003774EF /* NewVRUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		3B8000A42DE9AB0F003774EF /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -126,7 +115,8 @@
 			);
 			name = NewVR;
 			packageProductDependencies = (
-				3B8000A52DE9AB0F003774EF /* FirebaseFirestore */,
+				3B38C1352DFC098700C45B33 /* FirebaseCore */,
+				3B38C1372DFC099C00C45B33 /* FirebaseFirestore */,
 			);
 			productName = NewVR;
 			productReference = 3B80005C2DE982ED003774EF /* NewVR.app */;
@@ -205,7 +195,7 @@
 			mainGroup = 3B8000532DE982ED003774EF;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				3B8000A32DE9AAEE003774EF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				3B38C1332DFC092A00C45B33 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3B80005D2DE982ED003774EF /* Products */;
@@ -412,7 +402,6 @@
 				DEVELOPMENT_TEAM = 922N7TF68N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = NewVR/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "位置情報を許可してください";
@@ -444,7 +433,6 @@
 				DEVELOPMENT_TEAM = 922N7TF68N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = NewVR/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "位置情報を許可してください";
@@ -580,20 +568,25 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3B8000A32DE9AAEE003774EF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		3B38C1332DFC092A00C45B33 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 11.13.0;
+				minimumVersion = 11.14.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		3B8000A52DE9AB0F003774EF /* FirebaseFirestore */ = {
+		3B38C1352DFC098700C45B33 /* FirebaseCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3B8000A32DE9AAEE003774EF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 3B38C1332DFC092A00C45B33 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		3B38C1372DFC099C00C45B33 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B38C1332DFC092A00C45B33 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */

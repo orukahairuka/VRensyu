@@ -18,6 +18,9 @@ import CoreLocation
 import Combine
 import FirebaseFirestore
 import MapKit
+import SwiftUICore
+import _MapKit_SwiftUI
+import SwiftUI
 
 final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var userLocations: [LocationData] = []
@@ -109,12 +112,8 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
 }
 
 
-// UserMapView.swift
-import SwiftUI
-import MapKit
-
 struct UserMapView: View {
-    @StateObject private var viewModel = MapLocationViewModel()
+    @ObservedObject var viewModel: MapLocationViewModel
     private let currentGroupCode = UserDefaults.standard.string(forKey: "groupCode") ?? "ABC123"
 
     var body: some View {
@@ -142,4 +141,3 @@ struct UserMapView: View {
         }
     }
 }
-

@@ -15,7 +15,7 @@ struct NewVRApp: App {
         }
     var body: some Scene {
         WindowGroup {
-            UserMapView()
+            ContentView()
         }
     }
 }
