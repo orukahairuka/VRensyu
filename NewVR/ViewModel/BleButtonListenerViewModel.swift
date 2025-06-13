@@ -41,7 +41,7 @@ final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralMan
         print("📡 発見: \(peripheral.name ?? "no name")")
         print("📦 Advertisement: \(advertisementData)")
 
-        if let name = peripheral.name, name == "ESP32 Button" {
+        if let name = peripheral.name, name.contains("ESP32") {
             log.append("\n✅ 対象デバイス発見: \(name)")
             targetPeripheral = peripheral
             centralManager.stopScan()
