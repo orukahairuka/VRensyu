@@ -33,9 +33,22 @@
 		3B8000732DE982EF003774EF /* NewVRUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NewVRUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3B61DF932DFBFD880081509B /* Exceptions for "NewVR" folder in "NewVR" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 3B80005B2DE982ED003774EF /* NewVR */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3B80005E2DE982ED003774EF /* NewVR */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3B61DF932DFBFD880081509B /* Exceptions for "NewVR" folder in "NewVR" target */,
+			);
 			path = NewVR;
 			sourceTree = "<group>";
 		};
@@ -399,6 +412,7 @@
 				DEVELOPMENT_TEAM = 922N7TF68N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NewVR/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "位置情報を許可してください";
@@ -430,6 +444,7 @@
 				DEVELOPMENT_TEAM = 922N7TF68N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NewVR/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "bluetooth使います";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "位置情報を許可してください";
