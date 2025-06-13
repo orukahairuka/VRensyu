@@ -21,10 +21,8 @@ import MapKit
 
 final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var userLocations: [LocationData] = []
-    @Published var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 35.0, longitude: 135.0),
-        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    )
+    @Published var region: MKCoordinateRegion? = nil
+    private var hasSetInitialRegion = false
 
     private let locationManager = CLLocationManager()
     private let db = Firestore.firestore()
@@ -73,7 +71,7 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print("🛰️ 位置情報更新された") // ← 追加してみて
+        print("🛰️ 位置情報更新された")
         guard let loc = locations.last else { return }
 
         db.collection("locations").document(userId).setData([
@@ -91,15 +89,19 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
             }
         }
 
-
-        DispatchQueue.main.async {
-            self.region.center = loc.coordinate
+        if !hasSetInitialRegion {
+            DispatchQueue.main.async {
+                self.region = MKCoordinateRegion(
+                    center: loc.coordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                )
+                self.hasSetInitialRegion = true
+            }
         }
     }
 
     func updateHealth(_ newValue: Int) {
         self.health = max(0, newValue)
-        // HP変化時もFirestoreに反映
         if let location = locationManager.location {
             locationManager(locationManager, didUpdateLocations: [location])
         }
@@ -116,23 +118,28 @@ struct UserMapView: View {
     private let currentGroupCode = UserDefaults.standard.string(forKey: "groupCode") ?? "ABC123"
 
     var body: some View {
-        Map(coordinateRegion: $viewModel.region, annotationItems: viewModel.userLocations) { location in
-            MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
-                VStack {
-                    Image(systemName: "mappin.circle.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(location.groupCode == currentGroupCode ? .blue : .red)
-                    Text(location.id.prefix(6))
-                        .font(.caption)
-                        .foregroundColor(.black)
-                    Text("HP: \(location.hp)")
-                        .font(.caption2)
-                        .foregroundColor(.gray)
+        if let region = viewModel.region {
+            Map(coordinateRegion: .constant(region), annotationItems: viewModel.userLocations) { location in
+                MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
+                    VStack {
+                        Image(systemName: "mappin.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .foregroundColor(location.groupCode == currentGroupCode ? .blue : .red)
+                        Text(location.id.prefix(6))
+                            .font(.caption)
+                            .foregroundColor(.black)
+                        Text("HP: \(location.hp)")
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                    }
                 }
             }
+            .edgesIgnoringSafeArea(.all)
+        } else {
+            ProgressView("位置取得中…")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .edgesIgnoringSafeArea(.all)
     }
 }
 
