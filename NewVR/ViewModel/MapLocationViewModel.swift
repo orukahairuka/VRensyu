@@ -21,6 +21,7 @@ import MapKit
 import SwiftUICore
 import _MapKit_SwiftUI
 import SwiftUI
+import UIKit
 
 final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var userLocations: [LocationData] = []
@@ -29,7 +30,7 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
 
     private let locationManager = CLLocationManager()
     private let db = Firestore.firestore()
-    private let userId = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+    private let userId = UIDevice.persistentID
     private let groupCode: String = UserDefaults.standard.string(forKey: "groupCode") ?? "ABC123"
     @Published var health: Int = 100
 
