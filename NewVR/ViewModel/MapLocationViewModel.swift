@@ -1,8 +1,10 @@
 // LocationData.swift
 import Foundation
 
+
 struct LocationData: Identifiable {
     let id: String
+    let username: String
     let latitude: Double
     let longitude: Double
     let timestamp: Date
@@ -32,6 +34,10 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
     private let db = Firestore.firestore()
     private let userId = UIDevice.persistentID
     private let groupCode: String = UserDefaults.standard.string(forKey: "groupCode") ?? "ABC123"
+    private var username: String {
+        UserDefaults.standard.string(forKey: "username") ?? "Unknown"
+    }
+
     @Published var health: Int = 100
 
     override init() {
@@ -49,7 +55,8 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
 
             let newLocations: [LocationData] = documents.compactMap { doc in
                 let data = doc.data()
-                guard let lat = data["latitude"] as? Double,
+                guard let username = data["username"] as? String,
+                      let lat = data["latitude"] as? Double,
                       let lon = data["longitude"] as? Double,
                       let ts = data["timestamp"] as? Timestamp,
                       let hp = data["hp"] as? Int,
@@ -59,6 +66,7 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
 
                 return LocationData(
                     id: doc.documentID,
+                    username: username,
                     latitude: lat,
                     longitude: lon,
                     timestamp: ts.dateValue(),
@@ -79,6 +87,8 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
         guard let loc = locations.last else { return }
 
         db.collection("locations").document(userId).setData([
+            "userId": userId,
+            "username": username,
             "latitude": loc.coordinate.latitude,
             "longitude": loc.coordinate.longitude,
             "timestamp": Timestamp(date: Date()),
@@ -113,6 +123,10 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
 }
 
 
+
+import SwiftUI
+import MapKit
+
 struct UserMapView: View {
     @ObservedObject var viewModel: MapLocationViewModel
     private let currentGroupCode = UserDefaults.standard.string(forKey: "groupCode") ?? "ABC123"
@@ -126,7 +140,7 @@ struct UserMapView: View {
                             .resizable()
                             .frame(width: 30, height: 30)
                             .foregroundColor(location.groupCode == currentGroupCode ? .blue : .red)
-                        Text(location.id.prefix(6))
+                        Text(location.username.prefix(8)) // ← usernameを表示
                             .font(.caption)
                             .foregroundColor(.black)
                         Text("HP: \(location.hp)")

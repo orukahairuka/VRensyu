@@ -1,13 +1,3 @@
-//
-//  BleButtonListenerViewModel.swift
-//  NewVR
-//
-//  Created by 櫻井絵理香 on 2025/05/30.
-//
-
-// BleButtonListenerViewModel.swift
-// 修正内容: `mapViewModel` のオプショナルを安全に unwrap
-
 import Foundation
 import CoreBluetooth
 
@@ -20,24 +10,48 @@ final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralMan
     private var targetPeripheral: CBPeripheral?
     private var notifyCharacteristic: CBCharacteristic?
 
-    private let targetServiceUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABC")
-    private let notifyCharacteristicUUID = CBUUID(string: "87654321-4321-4321-4321-CBA987654321")
+    // 🔧 UUIDを後から決定
+    private var targetServiceUUID: CBUUID!
+    private var notifyCharacteristicUUID: CBUUID!
 
     override init() {
         super.init()
+        setupUUID()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
 
     init(mapViewModel: MapLocationViewModel) {
         self.mapViewModel = mapViewModel
         super.init()
+        setupUUID()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
+
+    /// 🔄 ユーザー名の末尾によってUUIDを切り替える
+    private func setupUUID() {
+        let username = UserDefaults.standard.string(forKey: "username") ?? ""
+        let userSuffix = username.suffix(1)
+
+        print("🧩 setupUUID(): username = \(username), suffix = \(userSuffix)")
+
+        if userSuffix == "2" {
+            targetServiceUUID = CBUUID(string: "12345678-0002-0002-0002-123456789ABC")
+            notifyCharacteristicUUID = CBUUID(string: "87654321-0002-0002-0002-CBA987654321")
+        } else {
+            targetServiceUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABC")
+            notifyCharacteristicUUID = CBUUID(string: "87654321-4321-4321-4321-CBA987654321")
+        }
+    }
+
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
             print("\n🔍 Bluetooth ON: スキャン開始")
+
+            // 🔁 ここで再度 UUID を設定し直す
+            setupUUID()
+
             centralManager.scanForPeripherals(withServices: nil, options: nil)
         default:
             print("\n❌ Bluetooth未対応/無効（状態: \(central.state.rawValue)）")
@@ -49,19 +63,29 @@ final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralMan
         print("📛 名前: \(peripheral.name ?? "no name")")
         print("📦 advertisementData: \(advertisementData)")
 
-        // この if は一時的に外してみてもよい
-        if let name = peripheral.name, name.contains("ESP32") {
-            print("✅ 対象デバイス発見: \(name)")
-            targetPeripheral = peripheral
-            centralManager.stopScan()
-            centralManager.connect(peripheral, options: nil)
+        let username = UserDefaults.standard.string(forKey: "username") ?? ""
+        let userSuffix = username.suffix(1)
+
+        if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
+            print("🔍 広告名: \(localName)")
+
+            if userSuffix == "1", localName.contains("ESP32 IR Button 1") {
+                connectTo(peripheral)
+            } else if userSuffix == "2", localName.contains("ESP32 IR Button 2") {
+                connectTo(peripheral)
+            }
         }
     }
 
+    private func connectTo(_ peripheral: CBPeripheral) {
+        print("✅ 対象デバイス発見: \(peripheral.name ?? "no name")")
+        targetPeripheral = peripheral
+        centralManager.stopScan()
+        centralManager.connect(peripheral, options: nil)
+    }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print("\n🔗 接続成功")
-        print("🔗 接続成功: \(peripheral.name ?? "no name")") // ✅ 追加ログ
+        print("\n🔗 接続成功: \(peripheral.name ?? "no name")")
         peripheral.delegate = self
         peripheral.discoverServices([targetServiceUUID])
     }
@@ -103,3 +127,4 @@ final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralMan
         }
     }
 }
+
