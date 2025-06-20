@@ -38,7 +38,7 @@ struct ContentView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("❤️ 体力: \(mapViewModel.health)")
-                ProgressView(value: Float(mapViewModel.health), total: 100)
+                ProgressView(value: Float(mapViewModel.health), total: 300)
                     .progressViewStyle(LinearProgressViewStyle())
 
                 if mapViewModel.health == 0 {
@@ -48,7 +48,7 @@ struct ContentView: View {
                         .bold()
 
                     Button(action: {
-                        mapViewModel.updateHealth(100)
+                        mapViewModel.updateHealth(300)
                         bleViewModel.log.append("\n🔁 体力を復活しました")
                     }) {
                         Text("🔁 もう一度")

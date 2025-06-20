@@ -4,7 +4,7 @@ import CoreBluetooth
 final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     @Published var log: String = "🔌 初期化待ち"
     private weak var mapViewModel: MapLocationViewModel?
-    @Published var health: Int = 100
+    @Published var health: Int = 300
 
     private var centralManager: CBCentralManager!
     private var targetPeripheral: CBPeripheral?

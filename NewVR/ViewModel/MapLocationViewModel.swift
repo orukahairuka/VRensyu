@@ -38,7 +38,7 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
         UserDefaults.standard.string(forKey: "username") ?? "Unknown"
     }
 
-    @Published var health: Int = 100
+    @Published var health: Int = 300
 
     override init() {
         super.init()

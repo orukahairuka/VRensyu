@@ -19,7 +19,7 @@ struct BleButtonListenerView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("❤️ 体力: \(viewModel.health)") // ← 修正済み
-                ProgressView(value: Float(viewModel.health), total: 100)
+                ProgressView(value: Float(viewModel.health), total: 300)
                     .progressViewStyle(LinearProgressViewStyle())
 
                 if viewModel.health == 0 {
@@ -29,7 +29,7 @@ struct BleButtonListenerView: View {
                         .bold()
 
                     Button(action: {
-                        viewModel.health = 100
+                        viewModel.health = 300
                         viewModel.log.append("\n🔁 体力を復活しました")
                     }) {
                         Text("🔁 もう一度")
