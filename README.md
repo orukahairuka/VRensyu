@@ -2,37 +2,17 @@
 
 [![Swift](https://img.shields.io/badge/Swift-5.0+-FA7343?style=for-the-badge&logo=swift&logoColor=white)](https://swift.org)
 [![iOS](https://img.shields.io/badge/iOS-14.0+-000000?style=for-the-badge&logo=ios&logoColor=white)](https://developer.apple.com/ios/)
-[![Firebase](https://img.shields.io/badge/Firebase-Firestore-FFA000?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com)
 [![Bluetooth](https://img.shields.io/badge/Bluetooth-LE-0082FC?style=for-the-badge&logo=bluetooth&logoColor=white)](https://developer.apple.com/bluetooth/)
 
 ## 🌟 概要
 
-NewVRは、物理的なESP32デバイスとモバイルアプリケーションを組み合わせた革新的なリアルタイム位置情報ベースのマルチプレイヤーバトルゲームです。プレイヤーは実世界でチームを組み、Bluetooth対応のコントローラーを使って対戦します。
+NewVRは、物理的なESP32デバイスとモバイルアプリケーションを組み合わせたアプリです
 
 ### ✨ 主な特徴
 
-- 🎯 **リアルタイムバトル**: ESP32デバイスのボタンやIRセンサーを使った物理的な攻撃システム
+- 🎯 **リアルタイムバトル**: ESP32デバイスのボタンやIRセンサーを使った赤外線レーザー銃ゲーム
 - 🗺️ **位置情報追跡**: すべてのプレイヤーの位置をリアルタイムで地図上に表示
-- 👥 **チームプレイ**: グループコードを使用したチーム制バトル
 - 💙 **Bluetooth連携**: ESP32デバイスとのシームレスなBLE通信
-- 🔥 **Firebase同期**: リアルタイムでのプレイヤーデータ同期
-- 🎵 **サウンドエフェクト**: 爆発音や呪いの旋律などの効果音
-
-## 📱 スクリーンショット
-
-<div align="center">
-  <img src="docs/images/gameplay.png" width="250" alt="ゲームプレイ画面">
-  <img src="docs/images/map-view.png" width="250" alt="マップビュー">
-  <img src="docs/images/setup.png" width="250" alt="セットアップ画面">
-</div>
-
-## 🎮 ゲームの流れ
-
-1. **セットアップ**: ユーザー名（末尾に1または2が必須）とチームコードを入力
-2. **デバイス接続**: 対応するESP32デバイスに自動接続
-3. **バトル開始**: マップ上で他のプレイヤーの位置を確認しながら移動
-4. **攻撃**: ESP32のボタンを押すと相手にダメージを与える（-10HP）
-5. **勝利条件**: 相手のHPを0にすると勝利
 
 ## 🛠️ 技術スタック
 
@@ -69,11 +49,6 @@ NewVRは、物理的なESP32デバイスとモバイルアプリケーション�
 git clone https://github.com/yourusername/NewVR.git
 cd NewVR
 ```
-
-### 2. Firebase設定
-1. [Firebase Console](https://console.firebase.google.com)で新しいプロジェクトを作成
-2. iOSアプリを追加し、`GoogleService-Info.plist`をダウンロード
-3. ダウンロードしたファイルをXcodeプロジェクトに追加
 
 ### 3. ESP32ファームウェアの書き込み
 ```cpp
@@ -131,19 +106,6 @@ MapLocationViewModel
 All Connected Players
 ```
 
-## 🤝 コントリビューション
-
-1. このリポジトリをフォーク
-2. 新しいブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m 'Add some amazing feature'`)
-4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
-5. プルリクエストを作成
-
-### コーディング規約
-- SwiftLintのルールに従う
-- MVVMパターンを維持
-- 新機能には適切なドキュメントを追加
-
 ## 🐛 既知の問題
 
 - ESP32との接続が不安定になることがある → アプリ再起動で解決
@@ -159,27 +121,5 @@ All Connected Players
 - [ ] ランキングシステム
 - [ ] カスタマイズ可能なアバター
 
-## 📄 ライセンス
-
-このプロジェクトはMITライセンスの下で公開されています。詳細は[LICENSE](LICENSE)ファイルを参照してください。
-
-## 👥 開発者
-
 - **メイン開発者**: [@orukahairuka](https://github.com/orukahairuka)
 
-## 🙏 謝辞
-
-- ESP32コミュニティの皆様
-- Firebaseドキュメントとサンプルコード
-- SwiftUIチュートリアルとリソース
-
----
-
-<div align="center">
-  <p>Made with ❤️ by NewVR Team</p>
-  <p>
-    <a href="https://github.com/orukahairuka/NewVR/issues">Issues</a> •
-    <a href="https://github.com/orukahairuka/NewVR/pulls">Pull Requests</a> •
-    <a href="https://github.com/orukahairuka/NewVR/wiki">Wiki</a>
-  </p>
-</div>
