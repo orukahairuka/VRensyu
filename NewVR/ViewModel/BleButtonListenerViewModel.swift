@@ -37,7 +37,7 @@ final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralMan
         if userSuffix == "2" {
             targetServiceUUID = CBUUID(string: "12345678-0002-0002-0002-123456789ABC")
             notifyCharacteristicUUID = CBUUID(string: "87654321-0002-0002-0002-CBA987654321")
-        } else {
+        } else if userSuffix == "1"{
             targetServiceUUID = CBUUID(string: "12345678-1234-1234-1234-123456789ABC")
             notifyCharacteristicUUID = CBUUID(string: "87654321-4321-4321-4321-CBA987654321")
         }

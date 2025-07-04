@@ -107,11 +107,12 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
             DispatchQueue.main.async {
                 self.region = MKCoordinateRegion(
                     center: loc.coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                    span: MKCoordinateSpan(latitudeDelta: 0.0001, longitudeDelta: 0.0001) // 👈 ズームイン
                 )
                 self.hasSetInitialRegion = true
             }
         }
+
     }
 
     func updateHealth(_ newValue: Int) {
