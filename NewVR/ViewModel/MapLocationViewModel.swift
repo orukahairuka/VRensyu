@@ -32,7 +32,7 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
 
     private let locationManager = CLLocationManager()
     private let db = Firestore.firestore()
-    private let userId = UIDevice.persistentID
+    private let userId = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
     private let groupCode: String = UserDefaults.standard.string(forKey: "groupCode") ?? "ABC123"
     private var username: String {
         UserDefaults.standard.string(forKey: "username") ?? "Unknown"
@@ -62,7 +62,8 @@ final class MapLocationViewModel: NSObject, ObservableObject, CLLocationManagerD
                       let hp = data["hp"] as? Int,
                       let groupCode = data["groupCode"] as? String,
                       let isAlive = data["isAlive"] as? Bool,
-                      isAlive else { return nil }
+                      isAlive,
+                      groupCode == self.groupCode else { return nil } // 🔒 味方チームのみフィルタリング
 
                 return LocationData(
                     id: doc.documentID,
@@ -130,7 +131,6 @@ import MapKit
 
 struct UserMapView: View {
     @ObservedObject var viewModel: MapLocationViewModel
-    private let currentGroupCode = UserDefaults.standard.string(forKey: "groupCode") ?? "ABC123"
 
     var body: some View {
         if let region = viewModel.region {
@@ -140,8 +140,8 @@ struct UserMapView: View {
                         Image(systemName: "mappin.circle.fill")
                             .resizable()
                             .frame(width: 30, height: 30)
-                            .foregroundColor(location.groupCode == currentGroupCode ? .blue : .red)
-                        Text(location.username.prefix(8)) // ← usernameを表示
+                            .foregroundColor(.blue) // 🔒 味方チームのみなので常に青色
+                        Text(location.username.prefix(8))
                             .font(.caption)
                             .foregroundColor(.black)
                         Text("HP: \(location.hp)")
