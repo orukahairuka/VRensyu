@@ -9,6 +9,7 @@ class LaserGameAudioManager: ObservableObject {
     static let shared = LaserGameAudioManager()
     
     private var audioPlayers: [String: AVAudioPlayer] = [:]
+    private var systemSoundPlayers: [String: SystemSoundPlayer] = [:]
     private var isEnabled: Bool = true
     private var hapticEnabled: Bool = true
     
@@ -26,6 +27,7 @@ class LaserGameAudioManager: ObservableObject {
         case teamSelect = "team_select"
         case victory = "victory"
         case defeat = "defeat"
+        case gameStart = "game_start"
         
         var fileName: String {
             switch self {
@@ -106,6 +108,8 @@ class LaserGameAudioManager: ObservableObject {
             
             guard let dataAsset = NSDataAsset(name: datasetName) else {
                 print("❌ NSDataAsset not found for: \(datasetName)")
+                // フォールバック: システムサウンドを再生
+                loadSystemSound(for: sound)
                 return
             }
             
@@ -126,6 +130,8 @@ class LaserGameAudioManager: ObservableObject {
         print("🔍 Looking for regular file: \(sound.rawValue).mp3")
         guard let url = Bundle.main.url(forResource: sound.rawValue, withExtension: "mp3") else {
             print("⚠️ Audio file not found: \(sound.rawValue).mp3")
+            // フォールバック: システムサウンドを再生
+            loadSystemSound(for: sound)
             return
         }
         
@@ -149,8 +155,54 @@ class LaserGameAudioManager: ObservableObject {
             UserDefaults.standard.set(true, forKey: "soundEnabledSet")
         }
         
+        // デフォルトで音声を有効にする
+        if UserDefaults.standard.object(forKey: "soundEnabled") == nil {
+            UserDefaults.standard.set(true, forKey: "soundEnabled")
+        }
+        if UserDefaults.standard.object(forKey: "vibrationEnabled") == nil {
+            UserDefaults.standard.set(true, forKey: "vibrationEnabled")
+        }
+        
         isEnabled = UserDefaults.standard.bool(forKey: "soundEnabled")
         hapticEnabled = UserDefaults.standard.bool(forKey: "vibrationEnabled")
+    }
+    
+    // システムサウンドのフォールバック
+    private func loadSystemSound(for sound: SoundEffect) {
+        // システムサウンドIDを使用したフォールバック
+        var systemSoundID: SystemSoundID = 0
+        
+        switch sound {
+        case .explosion, .maou:
+            systemSoundID = 1051 // Received message sound
+        case .curse:
+            systemSoundID = 1052 // Sent message sound
+        case .laserShot:
+            systemSoundID = 1103 // Tweet sent
+        case .reload:
+            systemSoundID = 1104 // Refresh
+        case .radarBeep:
+            systemSoundID = 1306 // Lock sound
+        case .buttonPress:
+            systemSoundID = 1104 // Click
+        case .gameStart:
+            systemSoundID = 1025 // Anticipate
+        case .defeat:
+            systemSoundID = 1328 // Update
+        case .victory:
+            systemSoundID = 1025 // Anticipate
+        case .damage:
+            systemSoundID = 1051 // Received message sound
+        case .powerUp:
+            systemSoundID = 1057 // Tink sound
+        case .teamSelect:
+            systemSoundID = 1103 // Tweet sent
+        }
+        
+        // SystemSoundPlayerを作成して保存
+        let player = SystemSoundPlayer(soundID: systemSoundID)
+        systemSoundPlayers[sound.rawValue] = player
+        print("⚠️ Using system sound fallback for: \(sound.rawValue) - ID: \(systemSoundID)")
     }
     
     // MARK: - Sound Control
@@ -160,27 +212,35 @@ class LaserGameAudioManager: ObservableObject {
             return 
         }
         
-        guard let player = audioPlayers[sound.rawValue] else {
-            print("⚠️ Audio player not found for: \(sound.rawValue)")
+        // まずAVAudioPlayerを試す
+        if let player = audioPlayers[sound.rawValue] {
+            // オーディオセッションの状態を確認
+            let session = AVAudioSession.sharedInstance()
+            print("🔊 Audio session category: \(session.category)")
+            print("🔊 Audio session active: \(session.isOtherAudioPlaying)")
+            print("🔊 System volume: \(session.outputVolume)")
+            
+            player.volume = volume
+            player.stop() // 前の再生を停止
+            player.currentTime = 0
+            let success = player.play()
+            print("🎵 Playing sound: \(sound.rawValue) - Success: \(success), Volume: \(volume), Duration: \(player.duration)")
+            
+            // 再生状態を確認
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                print("🎵 Player state - isPlaying: \(player.isPlaying), currentTime: \(player.currentTime)")
+            }
             return
         }
         
-        // オーディオセッションの状態を確認
-        let session = AVAudioSession.sharedInstance()
-        print("🔊 Audio session category: \(session.category)")
-        print("🔊 Audio session active: \(session.isOtherAudioPlaying)")
-        print("🔊 System volume: \(session.outputVolume)")
-        
-        player.volume = volume
-        player.stop() // 前の再生を停止
-        player.currentTime = 0
-        let success = player.play()
-        print("🎵 Playing sound: \(sound.rawValue) - Success: \(success), Volume: \(volume), Duration: \(player.duration)")
-        
-        // 再生状態を確認
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            print("🎵 Player state - isPlaying: \(player.isPlaying), currentTime: \(player.currentTime)")
+        // フォールバック: システムサウンドを試す
+        if let systemPlayer = systemSoundPlayers[sound.rawValue] {
+            print("⚠️ Using system sound fallback for: \(sound.rawValue)")
+            systemPlayer.play()
+            return
         }
+        
+        print("❌ No audio player available for: \(sound.rawValue)")
     }
     
     func stopSound(_ sound: SoundEffect) {
