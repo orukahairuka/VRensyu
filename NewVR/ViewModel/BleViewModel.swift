@@ -125,6 +125,9 @@ final class BleViewModel: ObservableObject {
         // ヘルスマネージャーにダメージを通知
         healthManager?.takeDamage(10)
         
+        // 被弾音を再生
+        LaserGameAudioManager.shared.playDamageEffect()
+        
         // 振動フィードバック（iOS）
         #if os(iOS)
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)

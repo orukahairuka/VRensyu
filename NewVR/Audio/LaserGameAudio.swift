@@ -2,6 +2,7 @@ import AVFoundation
 import UIKit
 import SwiftUI
 import Combine
+import AudioToolbox
 
 /// レーザーゲーム用オーディオマネージャー
 class LaserGameAudioManager: ObservableObject {
@@ -15,6 +16,7 @@ class LaserGameAudioManager: ObservableObject {
     enum SoundEffect: String, CaseIterable {
         case explosion = "爆発2" // 既存のアセット
         case curse = "呪いの旋律" // 既存のアセット
+        case maou = "maou" // 被弾音用のアセット
         case laserShot = "laser_shot"
         case reload = "reload"
         case radarBeep = "radar_beep"
@@ -31,6 +33,8 @@ class LaserGameAudioManager: ObservableObject {
                 return "爆発2.mp3"
             case .curse:
                 return "呪いの旋律.mp3"
+            case .maou:
+                return "maou.mp3"
             default:
                 return "\(rawValue).mp3"
             }
@@ -57,10 +61,21 @@ class LaserGameAudioManager: ObservableObject {
     // MARK: - Setup
     private func setupAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+            // playbackカテゴリを使用して音声再生を有効化
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
             try AVAudioSession.sharedInstance().setActive(true)
+            print("✅ Audio session setup successful")
         } catch {
             print("❌ Audio session setup failed: \(error)")
+            
+            // フォールバック：ambient カテゴリを試す
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+                try AVAudioSession.sharedInstance().setActive(true)
+                print("✅ Audio session setup successful (fallback to ambient)")
+            } catch {
+                print("❌ Audio session fallback also failed: \(error)")
+            }
         }
     }
     
@@ -71,39 +86,101 @@ class LaserGameAudioManager: ObservableObject {
     }
     
     private func preloadSound(_ sound: SoundEffect) {
-        guard let url = Bundle.main.url(forResource: sound.rawValue, withExtension: "mp3") ??
-                        Bundle.main.url(forResource: sound.fileName, withExtension: nil) else {
-            print("⚠️ Audio file not found: \(sound.fileName)")
+        // データセットファイルの場合はNSDataAssetを使用
+        if sound == .maou || sound == .explosion || sound == .curse {
+            var datasetName = sound.rawValue
+            
+            // データセット名をマッピング
+            switch sound {
+            case .explosion:
+                datasetName = "gua"
+            case .maou:
+                datasetName = "maou"
+            case .curse:
+                datasetName = "noroi"
+            default:
+                break
+            }
+            
+            print("🔍 Loading dataset file: \(datasetName)")
+            
+            guard let dataAsset = NSDataAsset(name: datasetName) else {
+                print("❌ NSDataAsset not found for: \(datasetName)")
+                return
+            }
+            
+            print("✅ Found data asset: \(sound.rawValue) - Size: \(dataAsset.data.count) bytes")
+            
+            do {
+                let player = try AVAudioPlayer(data: dataAsset.data)
+                player.prepareToPlay()
+                audioPlayers[sound.rawValue] = player
+                print("✅ Audio loaded successfully from data asset: \(sound.rawValue) - Duration: \(player.duration)s")
+            } catch {
+                print("❌ Failed to load audio from data asset: \(sound.rawValue) - \(error)")
+            }
             return
         }
+        
+        // 通常のファイルの場合
+        print("🔍 Looking for regular file: \(sound.rawValue).mp3")
+        guard let url = Bundle.main.url(forResource: sound.rawValue, withExtension: "mp3") else {
+            print("⚠️ Audio file not found: \(sound.rawValue).mp3")
+            return
+        }
+        
+        print("✅ Found audio file at: \(url.path)")
         
         do {
             let player = try AVAudioPlayer(contentsOf: url)
             player.prepareToPlay()
             audioPlayers[sound.rawValue] = player
+            print("✅ Audio loaded successfully: \(sound.rawValue) - Duration: \(player.duration)s")
         } catch {
-            print("❌ Failed to load audio: \(sound.fileName) - \(error)")
+            print("❌ Failed to load audio: \(sound.rawValue) - \(error)")
         }
     }
     
     private func loadSettings() {
+        // デフォルトでは音声とバイブを有効にする
+        if !UserDefaults.standard.bool(forKey: "soundEnabledSet") {
+            UserDefaults.standard.set(true, forKey: "soundEnabled")
+            UserDefaults.standard.set(true, forKey: "vibrationEnabled")
+            UserDefaults.standard.set(true, forKey: "soundEnabledSet")
+        }
+        
         isEnabled = UserDefaults.standard.bool(forKey: "soundEnabled")
         hapticEnabled = UserDefaults.standard.bool(forKey: "vibrationEnabled")
     }
     
     // MARK: - Sound Control
     func playSound(_ sound: SoundEffect, volume: Float = 1.0) {
-        guard isEnabled else { return }
+        guard isEnabled else { 
+            print("⚠️ Audio is disabled")
+            return 
+        }
         
         guard let player = audioPlayers[sound.rawValue] else {
             print("⚠️ Audio player not found for: \(sound.rawValue)")
             return
         }
         
+        // オーディオセッションの状態を確認
+        let session = AVAudioSession.sharedInstance()
+        print("🔊 Audio session category: \(session.category)")
+        print("🔊 Audio session active: \(session.isOtherAudioPlaying)")
+        print("🔊 System volume: \(session.outputVolume)")
+        
         player.volume = volume
         player.stop() // 前の再生を停止
         player.currentTime = 0
-        player.play()
+        let success = player.play()
+        print("🎵 Playing sound: \(sound.rawValue) - Success: \(success), Volume: \(volume), Duration: \(player.duration)")
+        
+        // 再生状態を確認
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            print("🎵 Player state - isPlaying: \(player.isPlaying), currentTime: \(player.currentTime)")
+        }
     }
     
     func stopSound(_ sound: SoundEffect) {
@@ -151,6 +228,7 @@ class LaserGameAudioManager: ObservableObject {
     
     // MARK: - Game-Specific Audio Events
     func playDamageEffect() {
+        print("🔥 Damage effect triggered - playing explosion sound")
         playSound(.explosion, volume: 0.8)
         triggerHaptic(.heavy)
         
@@ -158,6 +236,32 @@ class LaserGameAudioManager: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.triggerHaptic(.medium)
         }
+    }
+    
+    // テスト用の音声再生機能
+    func testPlayExplosionSound() {
+        print("🎵 Testing explosion sound playback...")
+        print("🎵 Audio enabled: \(isEnabled)")
+        print("🎵 Available audio players: \(audioPlayers.keys.sorted())")
+        
+        if let player = audioPlayers["爆発2"] {
+            print("🎵 Explosion player found - Duration: \(player.duration), Volume: \(player.volume)")
+        } else {
+            print("❌ Explosion player not found!")
+        }
+        
+        // システムサウンドでテスト
+        print("🎵 Testing system sound...")
+        AudioServicesPlaySystemSound(1000) // システムサウンド
+        
+        playSound(.explosion, volume: 1.0)
+    }
+    
+    // システムサウンドテスト
+    func testSystemSound() {
+        print("🔊 Playing system sound...")
+        AudioServicesPlaySystemSound(1000) // システムサウンド
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // バイブレーション
     }
     
     func playWeaponFire() {

@@ -41,6 +41,35 @@ struct ContentView: View {
                 ProgressView(value: Float(mapViewModel.health), total: 300)
                     .progressViewStyle(LinearProgressViewStyle())
 
+                // 音声テスト用ボタン（常に表示）
+                HStack {
+                    Button(action: {
+                        LaserGameAudioManager.shared.testPlayExplosionSound()
+                        bleViewModel.log.append("\n💥 爆発音テストを実行しました")
+                    }) {
+                        Text("💥 爆発音テスト")
+                            .font(.headline)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                    
+                    Button(action: {
+                        LaserGameAudioManager.shared.testSystemSound()
+                        bleViewModel.log.append("\n🔊 システムサウンドテストを実行しました")
+                    }) {
+                        Text("🔊 システム音")
+                            .font(.headline)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.orange)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                }
+
                 if mapViewModel.health == 0 {
                     Text("💀 ゲームオーバー")
                         .font(.title)

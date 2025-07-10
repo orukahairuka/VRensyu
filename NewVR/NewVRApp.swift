@@ -12,6 +12,9 @@ import FirebaseCore
 struct NewVRApp: App {
     init() {
             FirebaseApp.configure()
+            
+            // オーディオマネージャーを初期化
+            _ = LaserGameAudioManager.shared
         }
     var body: some Scene {
         WindowGroup {

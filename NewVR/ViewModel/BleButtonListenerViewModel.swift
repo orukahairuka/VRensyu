@@ -120,6 +120,9 @@ final class BleButtonListenerViewModel: NSObject, ObservableObject, CBCentralMan
                     let newHealth = max(0, vm.health - 10)
                     vm.updateHealth(newHealth)
                     print("\n💥 体力が減った！ 残り: \(newHealth)")
+                    
+                    // 被弾音を再生
+                    LaserGameAudioManager.shared.playDamageEffect()
                 }
             }
         } else {
